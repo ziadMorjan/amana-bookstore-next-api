@@ -1,15 +1,16 @@
 import path from "path";
+import { NextRequest } from "next/server";
 import { readJSON, writeJSON } from "@/utils/readWriteJSON";
 import { Book } from "@/types/book";
 
 const booksPath = path.join(process.cwd(), "data", "books.json");
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const books = await readJSON<Book[]>(booksPath);
   return Response.json(books, { status: 200 });
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const newBook: Book = await req.json();
     const books = await readJSON<Book[]>(booksPath);
@@ -19,7 +20,7 @@ export async function POST(req: Request) {
 
     await writeJSON(booksPath, books);
     return Response.json(newBook, { status: 201 });
-  } catch {
+  } catch (error) {
     return Response.json({ error: "Failed to add book" }, { status: 500 });
   }
 }
