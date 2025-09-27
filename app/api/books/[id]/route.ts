@@ -5,8 +5,12 @@ import { Book } from "@/types/book";
 
 const booksPath = path.join(process.cwd(), "data", "books.json");
 
-export async function GET(req: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params;
+export async function GET(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
+  const { id } = await context.params;
+
   const books = await readJSON<Book[]>(booksPath);
   const book = books.find(b => b.id === parseInt(id));
 

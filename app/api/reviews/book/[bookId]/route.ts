@@ -5,10 +5,14 @@ import { Review } from "@/types/review";
 
 const reviewsPath = path.join(process.cwd(), "data", "reviews.json");
 
-export async function GET(req: NextRequest, context: { params: { bookId: string } }) {
-  const { bookId } = context.params;
-  const reviews = await readJSON<Review[]>(reviewsPath);
-  const filtered = reviews.filter(r => r.bookId === parseInt(bookId));
+export async function GET(
+  req: NextRequest,
+  context: { params: Promise<{ bookId: string }> }
+) {
+  const { bookId } = await context.params;
 
-  return Response.json(filtered, { status: 200 });
+  const reviews = await readJSON<Review[]>(reviewsPath);
+  const bookReviews = reviews.filter(r => r.bookId === parseInt(bookId));
+
+  return Response.json(bookReviews, { status: 200 });
 }
